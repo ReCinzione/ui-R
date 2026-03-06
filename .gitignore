@@ -1,0 +1,79 @@
+# ===========================
+# Prometeo - .gitignore
+# ===========================
+
+# --- Rust build artifacts ---
+/target/
+**/*.rs.bk
+
+# --- Binary state backup files ---
+# Il file principale prometeo_topology_state.bin viene tracciato
+*.bin.bak*
+*.bin.corpus_mixed_backup
+*.bin.pre_*
+*.bin.current
+*_OLD_*.bin
+*_REBUILD_OLD.bin
+*_backup_*.bin
+
+# --- Logs ---
+*.log
+
+# --- Backup files ---
+*.bak
+*.bak2
+*.bak3
+*.bak4
+
+# --- External datasets (too large for git) ---
+/data/external/*.gz
+/data/external/*.tgz
+/data/external/*.jsonl.gz
+/data/external/*.jsonl
+/data/external/ita_news_2023_100K/
+/data/external/ita_wikipedia_2021_100K/
+/data/external/current_version/
+/data/external/wikidata_ita.tsv.bak
+/data/external/wikidata_ita_filtered.tsv.bak
+
+# --- Archive (old logs, sessions, snapshots) ---
+/archive/
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- AI tool configs ---
+.kiro/
+.zencoder/
+.zenflow/
+
+# --- Server credentials (non pushare MAI) ---
+IA di quarteire/
+
+# --- OS artifacts ---
+nul
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# --- PDF / large media ---
+*.pdf
+
+# --- Transient state backup JSONs ---
+prometeo_state_*.json
+prometeo_topology_state_*.json
+prometeo_topology_state_BACKUP_*.json
+
+# --- Transient output files ---
+stderr.txt
+stdout.txt

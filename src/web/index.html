@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROMETEO</title>
+<style>
+:root {
+  --bg:     #09091a;
+  --bg2:    #10101f;
+  --bg3:    #16162a;
+  --border: rgba(255,255,255,0.13);
+  --t1:     #f0f0ff;
+  --t2:     #9090b8;
+  --t3:     #60607a;
+  --blue:   #5aadff;
+  --green:  #4affb0;
+  --yellow: #ffd04a;
+  --red:    #ff4a6b;
+  --purple: #d060ff;
+  --orange: #ff9a5a;
+  --radius: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'JetBrains Mono','Fira Code',monospace;background:var(--bg);color:var(--t1);font-size:13px;}
+
+/* ── LAYOUT ── */
+.shell{display:flex;flex-direction:column;height:100vh;}
+
+/* header */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px;height:46px;flex-shrink:0;
+  background:rgba(10,10,22,0.98);border-bottom:1px solid var(--border);
+}
+.logo{font-size:14px;font-weight:700;letter-spacing:3px;
+  background:linear-gradient(120deg,var(--blue),var(--purple));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hdr-stats{display:flex;gap:20px;align-items:center;}
+.hstat{display:flex;flex-direction:column;align-items:flex-end;gap:0px;}
+.hstat-lbl{font-size:9px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.hstat-val{font-size:12px;color:var(--t1);}
+.hstat-val.hi{color:var(--green);}
+.ws-dot{width:7px;height:7px;border-radius:50%;background:var(--t3);}
+.ws-dot.ok{background:var(--green);box-shadow:0 0 5px var(--green);}
+
+/* tabs */
+.tabs{display:flex;gap:1px;padding:7px 18px 0;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;}
+.tab{padding:7px 14px;border-radius:7px 7px 0 0;cursor:pointer;font-size:11px;letter-spacing:1px;
+  color:var(--t2);border:1px solid transparent;border-bottom:none;background:none;transition:all 0.15s;white-space:nowrap;}
+.tab:hover{color:var(--t1);}
+.tab.active{color:var(--t1);background:var(--bg3);border-color:var(--border);position:relative;}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg3);}
+
+/* panels */
+.panels{flex:1;overflow:hidden;background:var(--bg3);}
+.panel{display:none;height:100%;padding:14px;overflow:auto;}
+.panel.active{display:flex;flex-direction:column;gap:10px;}
+
+/* card */
+.card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--radius);padding:14px;}
+.card-title{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t2);margin-bottom:8px;}
+
+/* bar */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.bar-lbl{width:80px;font-size:11px;color:var(--t1);flex-shrink:0;text-align:right;}
+.bar-track{flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:3px;transition:width 0.4s ease;}
+.bar-val{width:34px;font-size:10px;color:var(--t2);text-align:right;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.09);border-radius:2px;}
+
+/* ── TAB 1 — MENTE ── */
+.status-bar{
+  display:flex;align-items:center;gap:16px;padding:7px 14px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;
+  flex-shrink:0;flex-wrap:wrap;
+}
+.sbar-item{display:flex;align-items:center;gap:6px;}
+.sbar-lbl{font-size:9px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;}
+.sbar-val{font-size:12px;color:var(--t1);}
+.sbar-sep{width:1px;height:18px;background:var(--border);}
+.dream-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dream-dot.Awake{background:var(--yellow);}
+.dream-dot.WakefulDream{background:var(--blue);animation:pulse 2.5s infinite;}
+.dream-dot.DeepSleep{background:var(--purple);}
+.dream-dot.REM{background:var(--green);animation:pulse 0.9s infinite;}
+.dream-dot.LightSleep{background:var(--t3);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+
+/* vitals strip */
+.vitals-strip{display:flex;gap:8px;flex-shrink:0;}
+.vcard{flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;}
+.vcard-lbl{font-size:9px;color:var(--t2);text-transform:uppercase;letter-spacing:0.5px;}
+.vcard-val{font-size:16px;font-weight:700;margin-top:3px;}
+.vcard-bar{height:3px;border-radius:2px;margin-top:5px;background:rgba(255,255,255,0.07);}
+.vcard-bar-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+
+/* chat */
+.chat-wrap{display:flex;flex-direction:column;flex:1;min-height:0;}
+.chat-msgs{
+  flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;
+  padding:2px 0 4px;min-height:0;
+}
+.msg{max-width:82%;padding:10px 14px;border-radius:var(--radius);line-height:1.6;font-size:13px;}
+.msg.user{
+  align-self:flex-end;
+  background:linear-gradient(135deg,rgba(90,173,255,0.20),rgba(90,173,255,0.10));
+  border:1px solid rgba(90,173,255,0.35);color:#fff;
+}
+.msg.entity{
+  align-self:flex-start;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.16);color:var(--t1);
+}
+.msg.system{
+  align-self:center;background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.07);border-radius:20px;
+  padding:4px 12px;color:var(--t3);font-size:11px;font-style:italic;
+}
+.msg .kws{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px;}
+.msg .kw{
+  padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;
+  background:rgba(74,255,176,0.12);border:1px solid rgba(74,255,176,0.30);color:var(--green);
+}
+.chat-input-row{
+  display:flex;gap:7px;padding-top:9px;
+  border-top:1px solid var(--border);margin-top:6px;
+  flex-shrink:0;
+}
+.chat-input{
+  flex:1;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;
+  padding:9px 12px;color:var(--t1);font-family:inherit;font-size:13px;outline:none;
+  transition:border-color 0.2s;
+}
+.chat-input:focus{border-color:rgba(90,173,255,0.40);}
+.btn{padding:9px 16px;border-radius:7px;border:none;cursor:pointer;
+  font-family:inherit;font-size:11px;letter-spacing:1px;transition:all 0.2s;}
+.btn-primary{background:linear-gradient(135deg,var(--blue),rgba(74,138,255,0.6));color:#fff;}
+.btn-primary:hover{opacity:0.85;}
+.btn-sm{padding:6px 11px;border-radius:6px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.04);color:var(--t2);font-family:inherit;font-size:11px;cursor:pointer;}
+.btn-sm:hover{background:rgba(255,255,255,0.07);color:var(--t1);}
+
+/* ── TAB 2 — CAMPO ── */
+.word-list{display:flex;flex-direction:column;gap:4px;}
+.word-row{display:flex;align-items:center;gap:8px;padding:5px 7px;
+  border-radius:5px;border-bottom:1px solid rgba(255,255,255,0.03);}
+.word-row:hover{background:rgba(255,255,255,0.05);}
+.word-name{width:100px;font-size:13px;color:var(--t1);flex-shrink:0;}
+.word-fractal{width:80px;font-size:10px;color:var(--t2);flex-shrink:0;}
+.word-bar-track{flex:1;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;}
+.word-bar-fill{height:100%;border-radius:2px;transition:width 0.4s;}
+.word-act{width:40px;font-size:10px;color:var(--t2);text-align:right;}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:5px;}
+.chip{padding:4px 11px;border-radius:20px;font-size:11px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);color:var(--t1);}
+
+/* ── TAB 3 — UNIVERSO ── */
+#panel-frattali{padding:0;overflow:hidden;}
+#universe-canvas{display:block;width:100%;height:100%;cursor:grab;}
+#universe-canvas.dragging{cursor:grabbing;}
+.u-overlay{
+  position:absolute;background:rgba(9,9,26,0.88);
+  border:1px solid rgba(255,255,255,0.13);border-radius:8px;
+  padding:10px 12px;backdrop-filter:blur(6px);pointer-events:none;
+  font-size:11px;
+}
+
+.compound-item{display:flex;align-items:center;gap:8px;padding:7px 9px;
+  border-radius:7px;background:rgba(255,255,255,0.02);border:1px solid var(--border);margin-bottom:5px;}
+.compound-name{
+  font-size:12px;font-weight:600;min-width:100px;
+  background:linear-gradient(120deg,var(--purple),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.compound-fractals{display:flex;gap:3px;flex:1;flex-wrap:wrap;}
+.compound-fractal-chip{
+  padding:2px 6px;border-radius:4px;font-size:10px;
+  background:rgba(196,74,255,0.09);border:1px solid rgba(196,74,255,0.18);color:var(--purple);}
+.compound-strength-bar{width:48px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
+.compound-strength-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:2px;}
+
+/* locus info */
+.locus-trail{display:flex;gap:3px;flex-wrap:wrap;margin-top:5px;}
+.trail-chip{padding:1px 6px;border-radius:4px;font-size:10px;
+  background:rgba(255,255,255,0.03);color:var(--t2);border:1px solid rgba(255,255,255,0.07);}
+
+/* ── TAB 4 — VOLONTÀ ── */
+.intention-big{text-align:center;padding:18px;
+  border-radius:var(--radius);background:rgba(255,255,255,0.03);border:1px solid var(--border);}
+.intention-icon{font-size:36px;margin-bottom:6px;}
+.intention-name{font-size:22px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  background:linear-gradient(120deg,var(--blue),var(--green));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.drive-track{height:7px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden;margin-top:8px;}
+.drive-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width 0.5s ease;}
+.undercurrent-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.undercurrent-name{width:75px;font-size:11px;color:var(--t1);}
+.undercurrent-bar{flex:1;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
+.undercurrent-fill{height:100%;border-radius:2px;background:var(--purple);transition:width 0.4s;}
+.undercurrent-val{width:32px;font-size:10px;color:var(--t2);text-align:right;}
+
+.will-history{display:flex;flex-direction:column;gap:3px;max-height:160px;overflow-y:auto;}
+.will-history-item{display:flex;align-items:center;gap:7px;padding:4px 7px;border-radius:4px;font-size:11px;color:var(--t2);}
+.will-badge{padding:1px 5px;border-radius:4px;font-size:11px;font-weight:600;
+  background:rgba(90,173,255,0.14);color:var(--blue);}
+
+/* ── TAB 5 — SOGNO ── */
+.memory-stack{display:flex;flex-direction:column;gap:7px;}
+.memory-layer{border-radius:7px;padding:9px 12px;display:flex;align-items:center;gap:10px;}
+.memory-layer.stm{background:rgba(74,255,176,0.05);border:1px solid rgba(74,255,176,0.13);}
+.memory-layer.mtm{background:rgba(74,158,255,0.05);border:1px solid rgba(74,158,255,0.13);}
+.memory-layer.ltm{background:rgba(196,74,255,0.05);border:1px solid rgba(196,74,255,0.13);}
+.mem-icon{font-size:18px;}
+.mem-info{flex:1;}
+.mem-name{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.mem-name.stm{color:var(--green);}
+.mem-name.mtm{color:var(--blue);}
+.mem-name.ltm{color:var(--purple);}
+.mem-desc{font-size:10px;color:var(--t2);margin-top:1px;}
+.mem-count{font-size:20px;font-weight:700;color:var(--t2);}
+
+.dc-phase{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 10px;
+  border-radius:5px;font-size:9px;letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--t2);transition:all 0.3s;min-width:62px;text-align:center;}
+.dc-phase.current{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.11);color:var(--t1);}
+.dc-arrow{color:var(--t3);font-size:14px;align-self:center;flex-shrink:0;}
+.dc-icon{font-size:18px;}
+
+/* ── TAB 7 — FORMA ── */
+.forma-section-title{
+  font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--t3);margin-bottom:10px;margin-top:4px;
+}
+.visuals-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:8px;
+}
+.visual-card{
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:8px;padding:10px 6px 8px;cursor:default;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.visual-card.active{
+  border-color:rgba(90,173,255,0.5);
+  box-shadow:0 0 10px rgba(90,173,255,0.12);
+}
+.visual-icon{
+  width:60px;height:60px;
+  background:#f5f5f5;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;flex-shrink:0;
+}
+.visual-icon svg{width:52px;height:52px;}
+.visual-name{
+  margin-top:6px;font-size:8px;letter-spacing:1px;
+  text-transform:uppercase;color:var(--t2);text-align:center;
+}
+.visual-act-bar{
+  margin-top:5px;width:100%;height:2px;
+  background:rgba(255,255,255,0.07);border-radius:1px;overflow:hidden;
+}
+.visual-act-fill{height:100%;border-radius:1px;transition:width 0.5s ease;}
+
+.simplex-list{display:flex;flex-direction:column;gap:6px;}
+.simplex-row{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  border-radius:7px;padding:8px 10px;
+}
+.simplex-icon{
+  width:44px;height:44px;flex-shrink:0;
+  background:#f5f5f5;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.simplex-icon svg{width:38px;height:38px;}
+.simplex-info{flex:1;min-width:0;}
+.simplex-name{font-size:11px;font-weight:600;color:var(--t1);letter-spacing:0.5px;}
+.simplex-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
+.simplex-chip{
+  font-size:9px;padding:1px 5px;border-radius:3px;
+  background:rgba(90,173,255,0.1);color:var(--blue);
+  border:1px solid rgba(90,173,255,0.2);
+}
+.simplex-bars{display:flex;flex-direction:column;gap:3px;align-items:flex-end;min-width:50px;}
+.simplex-val{font-size:9px;color:var(--t3);text-align:right;}
+
+/* misc */
+.loading{color:var(--t2);font-size:11px;font-style:italic;padding:8px 0;}
+.row{display:flex;gap:10px;}
+.row>.card{flex:1;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* fractal color map */
+.SPAZIO    {color:#4a9eff;}
+.TEMPO     {color:#ffd04a;}
+.EGO       {color:#4affb0;}
+.RELAZIONE {color:#ff8c4a;}
+.POTENZIALE{color:#c44aff;}
+.LIMITE    {color:#ff4a6b;}
+.EMOZIONE  {color:#ff6eb0;}
+.PENSIERO  {color:#6eb0ff;}
+.CORPO     {color:#b0ff6e;}
+.default   {color:#7878a8;}
+</style>
+<!-- Three.js rimosso: sostituito con canvas 2D nativo -->
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══ HEADER ═══ -->
+<div class="hdr">
+  <span class="logo">PROMETEO</span>
+  <div class="hdr-stats">
+    <div class="hstat"><span class="hstat-lbl">parole</span><span class="hstat-val hi" id="h-vocab">—</span></div>
+    <div class="hstat"><span class="hstat-lbl">simplessi</span><span class="hstat-val" id="h-simplex">—</span></div>
+    <div class="hstat"><span class="hstat-lbl">perturbazioni</span><span class="hstat-val" id="h-perturb">—</span></div>
+    <div class="hstat"><span class="hstat-lbl">energia</span><span class="hstat-val" id="h-energy">—</span></div>
+    <div class="ws-dot" id="ws-dot"></div>
+  </div>
+</div>
+
+<!-- ═══ TABS ═══ -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('mente')">🧠 MENTE</button>
+  <button class="tab" onclick="showTab('campo')">🌌 CAMPO</button>
+  <button class="tab" onclick="showTab('frattali')">⚡ FRATTALI</button>
+  <button class="tab" onclick="showTab('volonta')">💫 VOLONTÀ</button>
+  <button class="tab" onclick="showTab('sogno')">🌙 SOGNO</button>
+  <button class="tab" onclick="showTab('pensieri')">🧭 NARRATIVA</button>
+  <button class="tab" onclick="showTab('forma')">◈ FORMA</button>
+</div>
+
+<!-- ═══ PANELS ═══ -->
+<div class="panels">
+
+<!-- ──────────── TAB 1 — MENTE ──────────── -->
+<div class="panel active" id="panel-mente">
+
+  <!-- vitals strip -->
+  <div class="vitals-strip">
+    <div class="vcard">
+      <div class="vcard-lbl">Attivazione</div>
+      <div class="vcard-val" id="v-act" style="color:var(--green)">0.00</div>
+      <div class="vcard-bar"><div class="vcard-bar-fill" id="vb-act" style="width:0%;background:var(--green)"></div></div>
+    </div>
+    <div class="vcard">
+      <div class="vcard-lbl">Curiosità</div>
+      <div class="vcard-val" id="v-cur" style="color:var(--blue)">0.00</div>
+      <div class="vcard-bar"><div class="vcard-bar-fill" id="vb-cur" style="width:0%;background:var(--blue)"></div></div>
+    </div>
+    <div class="vcard">
+      <div class="vcard-lbl">Fatica</div>
+      <div class="vcard-val" id="v-fat" style="color:var(--orange)">0.00</div>
+      <div class="vcard-bar"><div class="vcard-bar-fill" id="vb-fat" style="width:0%;background:var(--orange)"></div></div>
+    </div>
+    <div class="vcard">
+      <div class="vcard-lbl">Tensione</div>
+      <div class="vcard-val" id="v-tension" style="color:var(--yellow)">Calm</div>
+      <div class="vcard-bar"><div class="vcard-bar-fill" id="vb-sat" style="width:0%;background:var(--yellow)"></div></div>
+    </div>
+  </div>
+
+  <!-- status bar: fase + intenzione + locus -->
+  <div class="status-bar">
+    <div class="sbar-item">
+      <div class="dream-dot WakefulDream" id="dream-dot"></div>
+      <span class="sbar-lbl">FASE</span>
+      <span class="sbar-val" id="dream-phase-txt">WakefulDream</span>
+    </div>
+    <div class="sbar-sep"></div>
+    <div class="sbar-item">
+      <span id="intention-icon" style="font-size:13px;">💭</span>
+      <span class="sbar-lbl">INTENZIONE</span>
+      <span class="sbar-val" style="color:var(--blue);" id="intention-txt">Dream</span>
+      <span style="color:var(--t3);font-size:10px;margin-left:4px;" id="drive-txt">0.00</span>
+    </div>
+    <div class="sbar-sep"></div>
+    <div class="sbar-item">
+      <span class="sbar-lbl">LOCUS</span>
+      <span class="sbar-val" style="color:var(--purple);" id="locus-txt">—</span>
+    </div>
+  </div>
+
+  <!-- chat — elemento dominante -->
+  <div class="card chat-wrap" style="flex:1;min-height:0;">
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="msg system">Il campo è vivo prima che tu parli.</div>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-in" placeholder="scrivi qualcosa…" autocomplete="off" />
+      <button class="btn btn-primary" onclick="sendInput()">INVIA</button>
+      <button class="btn-sm" onclick="triggerDream()" title="Tick onirico">💤</button>
+      <button class="btn-sm" onclick="saveState()" title="Salva stato">💾</button>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────── TAB 2 — CAMPO ──────────── -->
+<div class="panel" id="panel-campo">
+  <div class="row">
+    <!-- gauge energia -->
+    <div class="card" style="flex:0 0 180px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div class="card-title" style="align-self:flex-start;">Energia Campo</div>
+      <canvas id="energy-canvas" width="130" height="130"></canvas>
+      <div style="display:flex;gap:20px;text-align:center;">
+        <div>
+          <div style="font-size:10px;color:var(--t2);">VERTICI</div>
+          <div style="font-size:18px;color:var(--blue);font-weight:700;" id="field-vertices">—</div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--t2);">ARCHI</div>
+          <div style="font-size:18px;color:var(--green);font-weight:700;" id="field-edges">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- parole attive -->
+    <div class="card" style="flex:1;overflow-y:auto;">
+      <div class="card-title">Parole Attive</div>
+      <div class="word-list" id="word-list">
+        <div class="loading">caricamento…</div>
+      </div>
+    </div>
+  </div>
+  <!-- frattali attivi -->
+  <div class="card">
+    <div class="card-title">Frattali Attivi</div>
+    <div class="chips" id="active-frattali-chips">
+      <div class="loading">nessun frattale attivo</div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────── TAB 3 — UNIVERSO ──────────── -->
+<div class="panel" id="panel-frattali" style="position:relative;padding:0;overflow:hidden;">
+  <canvas id="universe-canvas"></canvas>
+
+  <!-- Parola selezionata (top-left) -->
+  <div id="universe-info" class="u-overlay" style="top:10px;left:10px;min-width:155px;max-width:195px;pointer-events:none;">
+    <div style="font-size:10px;color:var(--t3);">clicca una parola</div>
+  </div>
+
+  <!-- Cerca (bottom-left) -->
+  <div style="position:absolute;bottom:12px;left:12px;display:flex;gap:5px;pointer-events:all;">
+    <input id="universe-search-input" placeholder="cerca parola…"
+      style="background:rgba(9,9,26,0.90);border:1px solid rgba(255,255,255,0.18);
+             border-radius:6px;padding:5px 9px;color:var(--t1);font-family:inherit;
+             font-size:11px;width:148px;outline:none;"
+      onkeydown="if(event.key==='Enter') universeSearch()" />
+    <button class="btn-sm" onclick="universeSearch()" style="padding:5px 9px;">↵</button>
+  </div>
+
+  <!-- Stats universo (top-right) -->
+  <div id="universe-stats" class="u-overlay" style="top:10px;right:10px;text-align:right;">
+    <div style="font-size:9px;color:var(--t3);letter-spacing:1px;">UNIVERSO</div>
+    <div id="u-word-count" style="font-size:20px;font-weight:700;color:var(--blue);">—</div>
+    <div style="font-size:9px;color:var(--t2);">parole · 64 frattali</div>
+    <div style="margin-top:6px;font-size:9px;color:var(--t3);">Locus</div>
+    <div id="u-locus" style="font-size:11px;color:var(--purple);font-weight:600;">—</div>
+  </div>
+
+  <!-- Hint (bottom-right) -->
+  <div style="position:absolute;bottom:12px;right:12px;font-size:9px;color:var(--t3);pointer-events:none;letter-spacing:1px;">
+    scroll: zoom · drag: naviga · click: seleziona
+  </div>
+</div>
+
+<!-- ──────────── TAB 4 — VOLONTÀ ──────────── -->
+<div class="panel" id="panel-volonta">
+  <div class="intention-big card" id="intention-card">
+    <div class="intention-icon" id="intention-big-icon">💭</div>
+    <div class="intention-name" id="intention-big-name">DREAM</div>
+    <div style="margin-top:10px;">
+      <div style="font-size:9px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">DRIVE</div>
+      <div class="drive-track"><div class="drive-fill" id="drive-fill" style="width:5%"></div></div>
+      <div style="font-size:12px;color:var(--t1);margin-top:3px;font-weight:600;" id="drive-pct">5%</div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Correnti Secondarie</div>
+      <div id="undercurrents-list"><div class="loading">nessuna</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Cronologia Intenzioni</div>
+      <div class="will-history" id="will-history"><div class="loading">in attesa…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ──────────── TAB 5 — SOGNO ──────────── -->
+<div class="panel" id="panel-sogno">
+  <!-- ciclo -->
+  <div class="card">
+    <div class="card-title">Ciclo del Sogno</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;padding:12px 0;">
+      <div class="dc-phase" id="dcp-wake"><div class="dc-icon">👁️</div><div>AWAKE</div></div>
+      <div class="dc-arrow">→</div>
+      <div class="dc-phase" id="dcp-wdream"><div class="dc-icon">🌙</div><div>VEGLIA ONIRICA</div></div>
+      <div class="dc-arrow">→</div>
+      <div class="dc-phase" id="dcp-deep"><div class="dc-icon">💤</div><div>DEEP SLEEP</div></div>
+      <div class="dc-arrow">→</div>
+      <div class="dc-phase" id="dcp-rem"><div class="dc-icon">✨</div><div>REM</div></div>
+    </div>
+    <div style="display:flex;gap:30px;justify-content:center;margin-top:4px;">
+      <div style="text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:var(--purple);" id="dream-cycles-big">0</div>
+        <div style="font-size:9px;color:var(--t2);letter-spacing:1px;">CICLI</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:var(--blue);" id="perturb-big">0</div>
+        <div style="font-size:9px;color:var(--t2);letter-spacing:1px;">PERTURBAZIONI</div>
+      </div>
+    </div>
+  </div>
+  <!-- memoria -->
+  <div class="card">
+    <div class="card-title">Livelli di Memoria</div>
+    <div class="memory-stack">
+      <div class="memory-layer stm">
+        <div class="mem-icon">⚡</div>
+        <div class="mem-info">
+          <div class="mem-name stm">STM</div>
+          <div class="mem-desc">Simplessi illuminati nel campo</div>
+        </div>
+        <div class="mem-count" id="mem-stm">0</div>
+      </div>
+      <div class="memory-layer mtm">
+        <div class="mem-icon">🔵</div>
+        <div class="mem-info">
+          <div class="mem-name mtm">MTM</div>
+          <div class="mem-desc">Pattern consolidati</div>
+        </div>
+        <div class="mem-count" id="mem-mtm">0</div>
+      </div>
+      <div class="memory-layer ltm">
+        <div class="mem-icon">💎</div>
+        <div class="mem-info">
+          <div class="mem-name ltm">LTM</div>
+          <div class="mem-desc">Struttura cristallizzata</div>
+        </div>
+        <div class="mem-count" id="mem-ltm">0</div>
+      </div>
+    </div>
+  </div>
+  <!-- azioni -->
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-primary" onclick="triggerDream()" style="flex:1">💤 Forza Tick Onirico</button>
+    <button class="btn-sm" onclick="triggerGrow()" style="padding:9px 16px;">🌱 Crescita</button>
+    <button class="btn-sm" onclick="saveState()" style="padding:9px 16px;">💾 Salva</button>
+  </div>
+</div>
+
+<!-- ──────────── TAB 6 — NARRATIVA ──────────── -->
+<div class="panel" id="panel-pensieri">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+    <span style="font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;">NarrativeSelf — ciclo deliberativo</span>
+    <button class="btn-sm" onclick="refreshNarrative()">↺ aggiorna</button>
+  </div>
+
+  <!-- Stato corrente -->
+  <div id="narrative-status" style="display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;margin-top:8px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);">
+    <div>
+      <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Stance</div>
+      <div id="narr-stance" style="font-size:14px;font-weight:600;color:var(--acc);">—</div>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Intenzione</div>
+      <div id="narr-intention" style="font-size:14px;font-weight:600;color:var(--t2);">—</div>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Continuità</div>
+      <div id="narr-continuity" style="font-size:14px;font-weight:600;color:var(--t2);">—</div>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Turni</div>
+      <div id="narr-turns" style="font-size:14px;font-weight:600;color:var(--t2);">—</div>
+    </div>
+    <div>
+      <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Nato</div>
+      <div id="narr-born" style="font-size:14px;font-weight:600;">—</div>
+    </div>
+  </div>
+
+  <div style="overflow-y:auto;flex:1;min-height:0;display:flex;flex-direction:column;gap:10px;margin-top:10px;">
+
+    <!-- Posizioni formate -->
+    <div>
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Posizioni deliberate</div>
+      <div id="narr-positions" style="display:flex;flex-direction:column;gap:4px;">
+        <div class="loading">—</div>
+      </div>
+    </div>
+
+    <!-- Turni cristallizzati -->
+    <div>
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Cristallizzati</div>
+      <div id="narr-crystallized" style="display:flex;flex-direction:column;gap:4px;">
+        <div class="loading">—</div>
+      </div>
+    </div>
+
+    <!-- Turni recenti -->
+    <div>
+      <div style="font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">Turni recenti</div>
+      <div id="narr-recent" style="display:flex;flex-direction:column;gap:4px;">
+        <div class="loading">—</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ──────────── TAB 7 — FORMA ──────────── -->
+<div class="panel" id="panel-forma">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+    <span style="font-size:10px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;">Grammatica visiva — 16 frattali primitivi · simplessi composti</span>
+    <button class="btn-sm" onclick="refreshVisuals()">↺ aggiorna</button>
+  </div>
+
+  <!-- griglia frattali -->
+  <div style="flex-shrink:0;">
+    <div class="forma-section-title">Frattali</div>
+    <div class="visuals-grid" id="visuals-fractals">
+      <div class="loading">caricamento…</div>
+    </div>
+  </div>
+
+  <!-- simplessi -->
+  <div style="flex:1;overflow-y:auto;min-height:0;">
+    <div class="forma-section-title" style="margin-top:6px;">Simplessi</div>
+    <div class="simplex-list" id="visuals-simplices">
+      <div class="loading">caricamento…</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /panels -->
+</div><!-- /shell -->
+
+<script>
+// ═══ STATE ═══
+let state = {};
+let willHistory = [];
+let ws = null;
+let fractalCompounds = [];
+
+const FRACTAL_COLORS = {
+  SPAZIO:'#4a9eff', TEMPO:'#ffd04a', EGO:'#4affb0',
+  RELAZIONE:'#ff8c4a', POTENZIALE:'#c44aff', LIMITE:'#ff4a6b',
+  EMOZIONE:'#ff6eb0', PENSIERO:'#6eb0ff', CORPO:'#b0ff6e',
+  MOVIMENTO:'#ff9e4a', QUALITA:'#4affff', SOCIETA:'#ff4aff',
+  AZIONE:'#ffb04a', NATURA:'#7aff4a', COMUNICAZIONE:'#4ab0ff',
+  MEMORIA_FRATTALE:'#b04aff',
+};
+const INTENTION_ICONS = {
+  Express:'💬', Explore:'🔭', Question:'❓', Remember:'📖',
+  Withdraw:'🤫', Reflect:'🪞', Dream:'💭',
+};
+
+// ═══ TABS ═══
+function showTab(name) {
+  const names = ['mente','campo','frattali','volonta','sogno','pensieri','forma'];
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', names[i] === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
+  if (name === 'campo')    refreshWordField();
+  if (name === 'frattali') refreshTopology();
+  if (name === 'volonta')  refreshWill();
+  if (name === 'pensieri') refreshNarrative();
+  if (name === 'forma')    refreshVisuals();
+}
+
+// ═══ WebSocket ═══
+function connectWS() {
+  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onopen = () => document.getElementById('ws-dot').className = 'ws-dot ok';
+  ws.onclose = () => { document.getElementById('ws-dot').className = 'ws-dot'; setTimeout(connectWS, 3000); };
+  ws.onmessage = e => {
+    try { const m = JSON.parse(e.data); if (m.type === 'state_update') updateFromSnapshot(m.data); } catch(_){}
+  };
+}
+
+// ═══ SNAPSHOT ═══
+function updateFromSnapshot(s) {
+  state = s;
+  const r = s.report;
+  set('h-vocab',    r.vocabulary_size.toLocaleString());
+  set('h-simplex',  r.simplex_count.toLocaleString());
+  set('h-perturb',  r.total_perturbations);
+  set('dream-cycles-big', r.dream_cycles);
+  set('perturb-big',      r.total_perturbations);
+  set('mem-stm', r.memory_stm);
+  set('mem-mtm', r.memory_mtm);
+  set('mem-ltm', r.memory_ltm);
+
+  const v = s.vital;
+  setVital('act', v.activation, '#4affb0');
+  setVital('cur', v.curiosity,  '#4a9eff');
+  setVital('fat', v.fatigue,    '#ff9a5a');
+  const tensions = {Calm:'#4affb0', Alert:'#ffd04a', Tense:'#ff9a5a', Overloaded:'#ff4a6b'};
+  const tcolor = tensions[v.tension] || '#9090b8';
+  const tel = document.getElementById('v-tension');
+  if(tel){ tel.textContent = v.tension; tel.style.color = tcolor; }
+  const tbar = document.getElementById('vb-sat');
+  if(tbar){ const tpct = {Calm:10,Alert:40,Tense:70,Overloaded:100}[v.tension]||10; tbar.style.width=tpct+'%'; tbar.style.background=tcolor; }
+
+  // dream phase
+  const phase = s.dream_phase;
+  const dot = document.getElementById('dream-dot');
+  dot.className = 'dream-dot ' + phase;
+  set('dream-phase-txt', phase);
+  const phaseMap = {Awake:'wake',WakefulDream:'wdream',LightSleep:'wdream',DeepSleep:'deep',REM:'rem'};
+  ['wake','wdream','deep','rem'].forEach(p => document.getElementById('dcp-'+p).classList.remove('current'));
+  document.getElementById('dcp-'+(phaseMap[phase]||'wdream')).classList.add('current');
+
+  // locus
+  if (s.locus) {
+    set('locus-txt', s.locus.fractal_name);
+    // aggiorna overlay universo
+    set('u-locus', s.locus.fractal_name);
+  }
+
+  // active fractals chips
+  const af = s.active_fractals || [];
+  const fc = document.getElementById('active-frattali-chips');
+  if (fc) {
+    fc.innerHTML = af.length
+      ? af.map(f => {
+          const col = FRACTAL_COLORS[f.name] || '#7878a8';
+          return `<span class="chip" style="border-color:${col}33;color:${col};background:${col}14">${f.name} <span style="opacity:0.55">${Math.round(f.activation*100)}%</span></span>`;
+        }).join('')
+      : '<div class="loading">nessun frattale attivo</div>';
+  }
+  drawEnergyGauge(state.vital?.activation || 0);
+}
+
+function setVital(id, val, color) {
+  const v = isNaN(val) ? 0 : val;
+  set('v-'+id, v.toFixed(2));
+  const bar = document.getElementById('vb-'+id);
+  if (bar) { bar.style.width = Math.round(v*100)+'%'; bar.style.background = color; }
+}
+
+// ═══ CHAT ═══
+async function sendInput() {
+  const inp = document.getElementById('chat-in');
+  const text = inp.value.trim();
+  if (!text) return;
+  inp.value = '';
+  appendMsg('user', text);
+  try {
+    const r = await fetch('/api/input', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({text})
+    });
+    const data = await r.json();
+    updateFromSnapshot(data.state);
+    appendEntityMsg(data.generated_text || '', data.keywords || []);
+    // aggiorna header energia
+    set('h-energy', (data.state?.vital?.activation||0).toFixed(3));
+    // aggiorna will se visibile
+    if (document.getElementById('panel-volonta').classList.contains('active')) refreshWill();
+  } catch(e) { console.error(e); }
+}
+
+function appendMsg(type, text) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg ' + type;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendEntityMsg(text, kws) {
+  const msgs = document.getElementById('chat-msgs');
+  const div = document.createElement('div');
+  div.className = 'msg entity';
+  div.textContent = text || '…';
+  if (kws.length) {
+    const kd = document.createElement('div');
+    kd.className = 'kws';
+    kws.forEach(k => { const s = document.createElement('span'); s.className='kw'; s.textContent=k; kd.appendChild(s); });
+    div.appendChild(kd);
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement.id === 'chat-in') sendInput();
+});
+
+// ═══ WORD FIELD ═══
+async function refreshWordField() {
+  try {
+    const r = await fetch('/api/wordfield');
+    const d = await r.json();
+    set('h-energy', d.total_energy.toFixed(3));
+    set('field-vertices', d.vertex_count.toLocaleString());
+    set('field-edges', d.edge_count.toLocaleString());
+    const list = document.getElementById('word-list');
+    if (!d.top_words?.length) { list.innerHTML = '<div class="loading">campo vuoto</div>'; return; }
+    const maxAct = Math.max(...d.top_words.map(w => w.activation), 0.001);
+    list.innerHTML = d.top_words.map(w => {
+      const col = FRACTAL_COLORS[w.fractal] || '#7878a8';
+      const pct = Math.round((w.activation / maxAct) * 100);
+      return `<div class="word-row">
+        <span class="word-name">${w.word}</span>
+        <span class="word-fractal" style="color:${col}">${w.fractal}</span>
+        <div class="word-bar-track"><div class="word-bar-fill" style="width:${pct}%;background:${col}"></div></div>
+        <span class="word-act">${w.activation.toFixed(3)}</span>
+      </div>`;
+    }).join('');
+    drawEnergyGauge(d.total_energy);
+  } catch(e) {}
+}
+
+function drawEnergyGauge(energy) {
+  const cv = document.getElementById('energy-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const w=cv.width, h=cv.height, cx=w/2, cy=h/2+10, r=48;
+  ctx.clearRect(0,0,w,h);
+  const e = isNaN(energy) ? 0 : energy;
+  const pct = Math.min(e * 5, 1);
+  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,2*Math.PI);
+  ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=9; ctx.stroke();
+  if (pct > 0) {
+    const g = ctx.createLinearGradient(cx-r,cy,cx+r,cy);
+    g.addColorStop(0,'#4a9eff'); g.addColorStop(0.5,'#c44aff'); g.addColorStop(1,'#4affb0');
+    ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,Math.PI+Math.PI*pct);
+    ctx.strokeStyle=g; ctx.lineWidth=9; ctx.stroke();
+  }
+  ctx.fillStyle='rgba(255,255,255,0.8)';
+  ctx.font='bold 16px JetBrains Mono,monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(e.toFixed(3),cx,cy-3);
+  ctx.font='8px JetBrains Mono,monospace'; ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.fillText('ENERGIA',cx,cy+13);
+}
+
+// ═══ WILL ═══
+async function refreshWill() {
+  try {
+    const r = await fetch('/api/will');
+    const d = await r.json();
+    const icon = INTENTION_ICONS[d.intention] || '💭';
+    set('intention-big-icon', icon);
+    set('intention-big-name', d.intention.toUpperCase());
+    set('intention-icon', icon);
+    set('intention-txt', d.intention);
+    set('drive-txt', d.drive.toFixed(2));
+    const pct = Math.min(Math.round(d.drive * 100), 100);
+    set('drive-pct', pct+'%');
+    const fill = document.getElementById('drive-fill');
+    if (fill) fill.style.width = pct+'%';
+    // undercurrents
+    const ul = document.getElementById('undercurrents-list');
+    if (d.undercurrents?.length) {
+      ul.innerHTML = d.undercurrents.map(u => `
+        <div class="undercurrent-row">
+          <span class="undercurrent-name">${u.name}</span>
+          <div class="undercurrent-bar"><div class="undercurrent-fill" style="width:${Math.min(Math.round(u.pressure*100),100)}%"></div></div>
+          <span class="undercurrent-val">${u.pressure.toFixed(2)}</span>
+        </div>`).join('');
+    } else {
+      ul.innerHTML = '<div class="loading">nessuna corrente secondaria</div>';
+    }
+    // history
+    const last = willHistory[0];
+    if (!last || last.name !== d.intention) {
+      willHistory.unshift({name:d.intention, icon, drive:d.drive});
+      if (willHistory.length > 14) willHistory.pop();
+    } else { willHistory[0].drive = d.drive; }
+    document.getElementById('will-history').innerHTML = willHistory.map(w =>
+      `<div class="will-history-item"><span>${w.icon}</span><span class="will-badge">${w.name}</span><span style="margin-left:auto">${w.drive.toFixed(2)}</span></div>`
+    ).join('');
+  } catch(e) {}
+}
+
+// ═══ UNIVERSO — Canvas 2D esplorabile ═══
+// 64 frattali come "soli" su 8 braccia radiali, ~8K parole come puntini orbitanti.
+
+// Colori dei 8 trigrammi (dimensioni primitive 8D)
+const TRIG_COLORS = [
+  '#ff6b6b', // 0 Cielo  ☰ Agency
+  '#5aadff', // 1 Terra  ☷ Permanenza
+  '#ffd04a', // 2 Tuono  ☳ Intensità
+  '#4affda', // 3 Acqua  ☵ Tempo
+  '#a06eff', // 4 Mont.  ☶ Confine
+  '#70d060', // 5 Vento  ☴ Complessità
+  '#ff9a5a', // 6 Fuoco  ☲ Definizione
+  '#ff6eb0', // 7 Lago   ☱ Valenza
+];
+
+let uCanvas = null, uCtx = null;
+let uPan = { x: 0, y: 0 };
+let uScale = 0.65;
+let uDrag = null;
+let uFractals = [];
+let uWords = [];
+let uSel = null;
+let uNbrs = [];
+let uFrame = null;
+let uLoaded = false;
+
+// Posizione frattale: id = lower*8 + upper → 8 braccia radiali
+function uFractalPos(id) {
+  const lower = (id / 8) | 0;
+  const upper = id & 7;
+  const angle = (lower / 8) * Math.PI * 2 - Math.PI / 2;
+  const r = 110 + (upper / 7) * 590;
+  return [Math.cos(angle) * r, Math.sin(angle) * r];
+}
+
+// Hash FNV-1a deterministico per posizioni stabili
+function uHash(w) {
+  let h = 2166136261;
+  for (let i = 0; i < w.length; i++) h = (Math.imul(h ^ w.charCodeAt(i), 16777619)) >>> 0;
+  return h;
+}
+
+// Posizione parola attorno al suo frattale dominante
+function uWordPos(w, fid) {
+  const h = uHash(w);
+  const angle = (h & 0xFFFF) / 0x10000 * Math.PI * 2;
+  const r = 22 + ((h >>> 16) % 105);
+  const [fx, fy] = uFractalPos(fid);
+  return [fx + Math.cos(angle) * r, fy + Math.sin(angle) * r];
+}
+
+// hex + alpha → rgba
+function uRgba(hex, a) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a.toFixed(3) + ')';
+}
+
+async function loadUniverse() {
+  try {
+    const [uR, sR] = await Promise.all([fetch('/api/universe'), fetch('/api/state')]);
+    const ud = await uR.json();
+    const sd = await sR.json();
+    const locusName = sd.locus ? sd.locus.fractal_name : '—';
+
+    uFractals = (ud.fractals || []).map(f => {
+      const [px, py] = uFractalPos(f.id);
+      return Object.assign({}, f, { px, py });
+    });
+    uWords = (ud.words || []).map(wd => {
+      const [px, py] = uWordPos(wd.w, wd.f);
+      return Object.assign({}, wd, { px, py });
+    });
+
+    const wc = document.getElementById('u-word-count');
+    if (wc) wc.textContent = uWords.length.toLocaleString();
+    const ul = document.getElementById('u-locus');
+    if (ul) ul.textContent = locusName;
+
+    uLoaded = true;
+    if (!uFrame) uAnimLoop();
+  } catch(e) { console.warn('universe load error', e); }
+}
+
+async function fetchWordNeighbors(wordEntry) {
+  try {
+    const r = await fetch('/api/word_neighbors?word=' + encodeURIComponent(wordEntry.w));
+    const d = await r.json();
+    uNbrs = (d.neighbors || []).map(nb => {
+      const [px, py] = uWordPos(nb.word, nb.fractal_id);
+      return { w: nb.word, f: nb.fractal_id, weight: nb.weight, px, py };
+    });
+    updateUniverseInfo(wordEntry, d.neighbors || []);
+  } catch(e) {}
+}
+
+function updateUniverseInfo(wordEntry, neighbors) {
+  const el = document.getElementById('universe-info');
+  if (!el) return;
+  const frac = uFractals.find(f => f.id === wordEntry.f);
+  const col = TRIG_COLORS[(wordEntry.f / 8) | 0];
+  const nbHtml = neighbors.slice(0, 10).map(nb => {
+    const nc = TRIG_COLORS[(nb.fractal_id / 8) | 0];
+    return '<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:1px;">' +
+      '<span style="color:' + nc + '">' + nb.word + '</span>' +
+      '<span style="color:var(--t3)">' + Math.round(nb.weight * 100) + '%</span></div>';
+  }).join('');
+  el.innerHTML =
+    '<div style="font-size:14px;font-weight:700;color:' + col + ';margin-bottom:4px;">' + wordEntry.w + '</div>' +
+    '<div style="font-size:9px;color:var(--t2);">frattale: ' + (frac ? frac.name : '?') + '</div>' +
+    '<div style="font-size:9px;color:var(--t2);">stabilità: ' + wordEntry.s + '%</div>' +
+    (nbHtml ? '<div style="margin-top:8px;font-size:9px;color:var(--t3);letter-spacing:1px;margin-bottom:3px;">CONNESSIONI</div>' + nbHtml : '');
+}
+
+function uAnimLoop() {
+  uFrame = requestAnimationFrame(uAnimLoop);
+  if (!uCtx || !uLoaded) return;
+
+  const W = uCanvas.width, H = uCanvas.height;
+  uCtx.fillStyle = '#09091a';
+  uCtx.fillRect(0, 0, W, H);
+
+  uCtx.save();
+  uCtx.translate(W / 2 + uPan.x, H / 2 + uPan.y);
+  uCtx.scale(uScale, uScale);
+
+  // Linee connessione verso vicini
+  if (uSel && uNbrs.length) {
+    for (const nb of uNbrs) {
+      const nc = TRIG_COLORS[(nb.f / 8) | 0];
+      uCtx.strokeStyle = uRgba(nc, 0.25 + nb.weight * 0.55);
+      uCtx.lineWidth = 0.8;
+      uCtx.beginPath();
+      uCtx.moveTo(uSel.px, uSel.py);
+      uCtx.lineTo(nb.px, nb.py);
+      uCtx.stroke();
+    }
+  }
+
+  // Puntini parole (rettangoli 1-2px per velocità)
+  for (const wd of uWords) {
+    const col = TRIG_COLORS[(wd.f / 8) | 0];
+    const stab = wd.s / 100;
+    const act  = wd.a / 100;
+    const alpha = Math.min(0.15 + stab * 0.55 + act * 0.30, 0.95);
+    const sz = uScale > 1.8 ? 1.4 : uScale > 0.9 ? 1.0 : 0.7;
+    uCtx.fillStyle = uRgba(col, alpha);
+    uCtx.fillRect(wd.px - sz, wd.py - sz, sz * 2, sz * 2);
+  }
+
+  // Vicini evidenziati + label
+  for (const nb of uNbrs) {
+    const nc = TRIG_COLORS[(nb.f / 8) | 0];
+    uCtx.fillStyle = nc;
+    uCtx.beginPath();
+    uCtx.arc(nb.px, nb.py, 2.5, 0, Math.PI * 2);
+    uCtx.fill();
+    if (uScale > 1.2) {
+      uCtx.fillStyle = uRgba(nc, 0.9);
+      uCtx.font = (9 / uScale) + 'px monospace';
+      uCtx.textAlign = 'center';
+      uCtx.fillText(nb.w, nb.px, nb.py - 5 / uScale);
+    }
+  }
+
+  // Soli frattali (sopra i puntini)
+  for (const f of uFractals) {
+    const col = TRIG_COLORS[f.lower];
+    const isPure = f.lower === f.upper;
+    const r = isPure ? 18 + f.activation * 20 : 8 + f.activation * 8;
+
+    // Alone luminosa
+    const grd = uCtx.createRadialGradient(f.px, f.py, 0, f.px, f.py, r * 4);
+    grd.addColorStop(0,    uRgba(col, isPure ? 0.55 : 0.18));
+    grd.addColorStop(0.45, uRgba(col, isPure ? 0.09 : 0.03));
+    grd.addColorStop(1,    uRgba(col, 0));
+    uCtx.fillStyle = grd;
+    uCtx.beginPath();
+    uCtx.arc(f.px, f.py, r * 4, 0, Math.PI * 2);
+    uCtx.fill();
+
+    // Nucleo
+    uCtx.fillStyle = isPure ? col : uRgba(col, 0.60);
+    uCtx.beginPath();
+    uCtx.arc(f.px, f.py, r, 0, Math.PI * 2);
+    uCtx.fill();
+
+    // Label
+    if (isPure || uScale > 0.75) {
+      const fs = Math.max(8, (isPure ? 12 : 8) / uScale);
+      uCtx.fillStyle = isPure ? '#ffffff' : uRgba(col, 0.80);
+      uCtx.font = (isPure ? 'bold ' : '') + fs + 'px monospace';
+      uCtx.textAlign = 'center';
+      uCtx.fillText(f.name, f.px, f.py + r + fs * 0.9);
+    }
+  }
+
+  // Cerchio pulsante parola selezionata
+  if (uSel) {
+    const col = TRIG_COLORS[(uSel.f / 8) | 0];
+    const t = Date.now() * 0.003;
+    const pulse = 6.5 + Math.sin(t) * 2;
+    uCtx.strokeStyle = uRgba(col, 0.70 + Math.sin(t) * 0.20);
+    uCtx.lineWidth = 1.2;
+    uCtx.beginPath();
+    uCtx.arc(uSel.px, uSel.py, pulse, 0, Math.PI * 2);
+    uCtx.stroke();
+    uCtx.fillStyle = col;
+    uCtx.beginPath();
+    uCtx.arc(uSel.px, uSel.py, 2.8, 0, Math.PI * 2);
+    uCtx.fill();
+    // Label sempre visibile per la parola selezionata
+    const lfs = Math.max(9, 13 / uScale);
+    uCtx.fillStyle = col;
+    uCtx.font = 'bold ' + lfs + 'px monospace';
+    uCtx.textAlign = 'center';
+    uCtx.fillText(uSel.w, uSel.px, uSel.py - pulse - 3);
+  }
+
+  uCtx.restore();
+}
+
+function uCanvasToWorld(cx, cy) {
+  const rect = uCanvas.getBoundingClientRect();
+  const px = (cx - rect.left) * (uCanvas.width  / rect.width);
+  const py = (cy - rect.top)  * (uCanvas.height / rect.height);
+  return [
+    (px - uCanvas.width  / 2 - uPan.x) / uScale,
+    (py - uCanvas.height / 2 - uPan.y) / uScale,
+  ];
+}
+
+function uSelectAt(wx, wy) {
+  // Clic su frattale: centra vista
+  for (const f of uFractals) {
+    const dx = f.px - wx, dy = f.py - wy;
+    const r = (f.lower === f.upper ? 18 : 8) + f.activation * 20;
+    if (dx * dx + dy * dy < r * r * 16) {
+      uScale = Math.max(uScale, 0.9);
+      uPan.x = -f.px * uScale;
+      uPan.y = -f.py * uScale;
+      return;
+    }
+  }
+  // Clic su parola: seleziona e carica vicini
+  const thr = Math.max(10, 15 / uScale);
+  let best = null, bestD2 = thr * thr;
+  for (const wd of uWords) {
+    const dx = wd.px - wx, dy = wd.py - wy;
+    const d2 = dx * dx + dy * dy;
+    if (d2 < bestD2) { bestD2 = d2; best = wd; }
+  }
+  if (best) {
+    uSel = best;
+    uNbrs = [];
+    fetchWordNeighbors(best);
+  } else {
+    uSel = null;
+    uNbrs = [];
+    const el = document.getElementById('universe-info');
+    if (el) el.innerHTML = '<div style="font-size:10px;color:var(--t3);">clicca una parola</div>';
+  }
+}
+
+function initUniverse() {
+  uCanvas = document.getElementById('universe-canvas');
+  if (!uCanvas) return;
+  uCtx = uCanvas.getContext('2d');
+
+  function resize() {
+    const p = uCanvas.parentElement;
+    if (!p) return;
+    const rect = p.getBoundingClientRect();
+    uCanvas.width  = Math.max(rect.width,  100);
+    uCanvas.height = Math.max(rect.height, 100);
+  }
+  resize();
+  new ResizeObserver(resize).observe(uCanvas.parentElement);
+
+  uCanvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    uScale = Math.max(0.10, Math.min(12, uScale * (e.deltaY < 0 ? 1.13 : 0.885)));
+  }, { passive: false });
+
+  uCanvas.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    uDrag = { sx: e.clientX, sy: e.clientY, px: uPan.x, py: uPan.y, moved: false };
+    uCanvas.classList.add('dragging');
+  });
+  uCanvas.addEventListener('mousemove', e => {
+    if (!uDrag) return;
+    const dx = e.clientX - uDrag.sx, dy = e.clientY - uDrag.sy;
+    if (Math.abs(dx) + Math.abs(dy) > 4) uDrag.moved = true;
+    uPan.x = uDrag.px + dx;
+    uPan.y = uDrag.py + dy;
+  });
+  uCanvas.addEventListener('mouseup', e => {
+    if (!uDrag) return;
+    if (!uDrag.moved) {
+      const [wx, wy] = uCanvasToWorld(e.clientX, e.clientY);
+      uSelectAt(wx, wy);
+    }
+    uDrag = null;
+    uCanvas.classList.remove('dragging');
+  });
+  uCanvas.addEventListener('mouseleave', () => {
+    uDrag = null;
+    uCanvas.classList.remove('dragging');
+  });
+
+  // Touch support
+  let lastTouches = null;
+  uCanvas.addEventListener('touchstart', e => {
+    e.preventDefault(); lastTouches = e.touches;
+  }, { passive: false });
+  uCanvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length === 1 && lastTouches && lastTouches.length === 1) {
+      uPan.x += e.touches[0].clientX - lastTouches[0].clientX;
+      uPan.y += e.touches[0].clientY - lastTouches[0].clientY;
+    } else if (e.touches.length === 2 && lastTouches && lastTouches.length === 2) {
+      const d0 = Math.hypot(lastTouches[0].clientX - lastTouches[1].clientX, lastTouches[0].clientY - lastTouches[1].clientY);
+      const d1 = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      if (d0 > 1) uScale = Math.max(0.10, Math.min(12, uScale * (d1 / d0)));
+    }
+    lastTouches = e.touches;
+  }, { passive: false });
+  uCanvas.addEventListener('touchend', e => { lastTouches = e.touches; }, { passive: false });
+}
+
+function universeSearch() {
+  const q = ((document.getElementById('universe-search-input') || {}).value || '').trim().toLowerCase();
+  if (!q) return;
+  const found = uWords.find(w => w.w === q) || uWords.find(w => w.w.startsWith(q));
+  if (found) {
+    uSel = found;
+    uNbrs = [];
+    uScale = 2.8;
+    uPan.x = -found.px * uScale;
+    uPan.y = -found.py * uScale;
+    fetchWordNeighbors(found);
+  }
+}
+
+async function refreshTopology() {
+  if (!uCanvas) initUniverse();
+  await loadUniverse();
+}
+
+// ═══ ACTIONS ═══
+async function triggerDream() {
+  appendMsg('system', '💤 ciclo onirico…');
+  try {
+    const r = await fetch('/api/dream', {method:'POST',headers:{'Content-Type':'application/json'},body:'{"ticks":10}'});
+    const s = await r.json();
+    updateFromSnapshot(s);
+    appendMsg('system', `✨ sogno completato — ${s.dream_phase} | cicli: ${s.report?.dream_cycles||0}`);
+  } catch(e) { appendMsg('system','⚠ errore sogno'); }
+}
+async function triggerGrow() {
+  try {
+    const r = await fetch('/api/grow',{method:'POST'});
+    const d = await r.json();
+    appendMsg('system', d.new_fractals>0
+      ? `🌱 +${d.new_fractals} frattali, +${d.new_connections} connessioni`
+      : `🌱 +${d.new_connections} connessioni`);
+  } catch(e) {}
+}
+async function saveState() {
+  const r = await fetch('/api/save',{method:'POST'});
+  const ok = await r.json();
+  appendMsg('system', ok ? '💾 stato salvato' : '⚠ salvataggio fallito');
+}
+
+// ═══ UTILS ═══
+function set(id, val) { const el=document.getElementById(id); if(el) el.textContent=val; }
+
+// ═══ PENSIERI ═══
+const KIND_LABELS = {
+  tension:       { icon: '⚡', label: 'TENSIONE',      color: 'var(--red)' },
+  gap:           { icon: '○',  label: 'LACUNA',        color: 'var(--t3)' },
+  missing_bridge:{ icon: '╌',  label: 'PONTE?',        color: 'var(--yellow)' },
+  disconnection: { icon: '⊗',  label: 'ISOLA',         color: 'var(--orange)' },
+  hypothesis:    { icon: '◈',  label: 'IPOTESI',       color: 'var(--blue)' },
+};
+
+async function refreshNarrative() {
+  try {
+    const r = await fetch('/api/narrative');
+    const n = await r.json();
+
+    const STANCE_COLORS = {
+      aperto:'#22c55e', curioso:'#ffd04a', riflessivo:'#4a9eff',
+      risonante:'#c44aff', ritratto:'#64748b'
+    };
+    const INTENT_COLORS = {
+      Acknowledge:'#22c55e', Reflect:'#4a9eff', Resonate:'#c44aff',
+      Explore:'#ffd04a', Express:'#ff8c4a', Remain:'#64748b'
+    };
+
+    const sc = STANCE_COLORS[n.stance] || 'var(--t2)';
+    const ic = INTENT_COLORS[n.pending_intention] || 'var(--t2)';
+    const cont = Math.round(n.topic_continuity * 100);
+    const contColor = cont > 65 ? '#22c55e' : cont > 35 ? '#ffd04a' : '#ef4444';
+
+    document.getElementById('narr-stance').textContent = n.stance;
+    document.getElementById('narr-stance').style.color = sc;
+    document.getElementById('narr-intention').textContent = n.pending_intention || '—';
+    document.getElementById('narr-intention').style.color = ic;
+    document.getElementById('narr-continuity').innerHTML =
+      `<span style="color:${contColor}">${cont}%</span>`;
+    document.getElementById('narr-turns').textContent = n.turn_count;
+    const bornEl = document.getElementById('narr-born');
+    bornEl.textContent = n.is_born ? '✓' : '✗';
+    bornEl.style.color = n.is_born ? '#22c55e' : '#ef4444';
+
+    function renderTurnRow(t) {
+      const sc2 = STANCE_COLORS[t.stance] || 'var(--t2)';
+      const ic2 = INTENT_COLORS[t.intention] || 'var(--t2)';
+      const pct = Math.round(t.intensity * 100);
+      const aw = t.awareness ? `<span style="color:var(--t3);font-size:9px;margin-left:6px;">— ${t.awareness}</span>` : '';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid var(--border);">
+        <span style="font-size:9px;color:var(--t3);min-width:20px;">#${t.turn_id}</span>
+        <span style="font-size:10px;color:var(--t3);">${t.act.replace('Declaration','Dichiar.').replace('Question','Domanda').replace('Greeting','Saluto').replace('EmotionalExpr','Emozione').replace('SelfQuery','AutoQuery')}</span>
+        <span style="font-size:10px;font-weight:600;color:${sc2};">${t.stance}</span>
+        <span style="font-size:10px;color:${ic2};">→ ${t.intention}</span>
+        <div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:${ic2};opacity:0.6;border-radius:2px;"></div>
+        </div>
+        <span style="font-size:9px;color:var(--t3);">${pct}%</span>
+        ${aw}
+      </div>`;
+    }
+
+    // Posizioni
+    const posEl = document.getElementById('narr-positions');
+    if (!n.positions.length) {
+      posEl.innerHTML = '<div style="color:var(--t3);font-size:10px;">nessuna posizione formata</div>';
+    } else {
+      posEl.innerHTML = n.positions.map(p => {
+        const sc3 = STANCE_COLORS[p.stance] || 'var(--t2)';
+        const ic3 = INTENT_COLORS[p.intention] || 'var(--t2)';
+        return `<div style="display:flex;align-items:center;gap:8px;padding:4px 8px;background:rgba(255,215,0,0.06);border-radius:6px;border:1px solid rgba(255,215,0,0.2);">
+          <span style="font-size:10px;color:#ffd04a;font-weight:700;">${p.act_key}</span>
+          <span style="font-size:10px;color:${sc3};">${p.stance}</span>
+          <span style="font-size:10px;color:${ic3};">→ ${p.intention}</span>
+        </div>`;
+      }).join('');
+    }
+
+    // Cristallizzati
+    const crysEl = document.getElementById('narr-crystallized');
+    crysEl.innerHTML = n.crystallized.length
+      ? n.crystallized.map(renderTurnRow).join('')
+      : '<div style="color:var(--t3);font-size:10px;">nessun turno cristallizzato</div>';
+
+    // Recenti
+    const recEl = document.getElementById('narr-recent');
+    recEl.innerHTML = n.recent_turns.length
+      ? n.recent_turns.map(renderTurnRow).join('')
+      : '<div style="color:var(--t3);font-size:10px;">nessun turno ancora</div>';
+
+  } catch(e) { console.error('narrative error', e); }
+}
+
+function buildThoughtDetail(t) {
+  const d = t.detail;
+  if (!d) return '';
+  switch(t.kind) {
+    case 'tension':
+      return `fase ${(d.phase_pi * 100).toFixed(0)}% di π`;
+    case 'gap':
+      return `${d.simplex_count} simplessi · ${d.word_count} parole`;
+    case 'missing_bridge':
+      return `prossimità ${(d.proximity * 100).toFixed(1)}% · ${d.shared_simplices} condivisi`;
+    case 'disconnection':
+      return (d.components || []).map((g,i) =>
+        `<span style="color:var(--t2)">C${i+1}:</span> ${g.join(', ')}`
+      ).join('<br>');
+    case 'hypothesis':
+      return `simplice #${d.simplex_id} dim=${d.dimension} att=${d.activation_count}`;
+    default: return '';
+  }
+}
+
+// ═══ FORMA — GRAMMATICA VISIVA ═══
+const FRACTAL_ACT_COLORS = {
+  SPAZIO:'#4a9eff', TEMPO:'#ffd04a', EGO:'#4affb0', RELAZIONE:'#ff8c4a',
+  POTENZIALE:'#c44aff', LIMITE:'#ff4a6b', MOVIMENTO:'#ffa04a',
+  EMOZIONE:'#ff6eb0', PENSIERO:'#6eb0ff', MEMORIA_F:'#a06eff',
+  COMUNICAZIONE:'#4affda', AZIONE:'#ff4a4a', NATURA:'#70d060',
+  CORPO:'#d0ff70', QUALITA:'#fff070', SOCIETA:'#70b0ff',
+};
+
+async function refreshVisuals() {
+  try {
+    const r = await fetch('/api/visuals');
+    const data = await r.json();
+    renderFractals(data.fractals);
+    renderSimplices(data.simplices);
+  } catch(e) {
+    document.getElementById('visuals-fractals').innerHTML = '<div class="loading">errore caricamento</div>';
+  }
+}
+
+function renderFractals(fractals) {
+  const el = document.getElementById('visuals-fractals');
+  if (!fractals.length) { el.innerHTML = '<div class="loading">nessun frattale</div>'; return; }
+  el.innerHTML = fractals.map(f => {
+    const act = Math.min(f.activation, 1.0);
+    const isActive = act > 0.05;
+    const color = FRACTAL_ACT_COLORS[f.name] || '#7878a8';
+    const pct = Math.round(act * 100);
+    return `<div class="visual-card${isActive ? ' active' : ''}" title="${f.name} — attivazione ${pct}%">
+      <div class="visual-icon">${f.svg}</div>
+      <div class="visual-name" style="${isActive ? 'color:'+color : ''}">${f.name}</div>
+      <div class="visual-act-bar">
+        <div class="visual-act-fill" style="width:${pct}%;background:${color};${isActive?'box-shadow:0 0 4px '+color+'88':''}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSimplices(simplices) {
+  const el = document.getElementById('visuals-simplices');
+  if (!simplices.length) { el.innerHTML = '<div class="loading">nessun simplesso attivo</div>'; return; }
+  el.innerHTML = simplices.map(s => {
+    const strPct = Math.round(s.strength * 100);
+    const actPct = Math.round(s.activation * 100);
+    const chips = s.fractal_names.map(n => {
+      const c = FRACTAL_ACT_COLORS[n] || '#7878a8';
+      return `<span class="simplex-chip" style="background:${c}18;color:${c};border-color:${c}33;">${n}</span>`;
+    }).join('');
+    return `<div class="simplex-row">
+      <div class="simplex-icon">${s.svg}</div>
+      <div class="simplex-info">
+        <div class="simplex-name">${s.name}</div>
+        <div class="simplex-chips">${chips}</div>
+      </div>
+      <div class="simplex-bars">
+        <div class="simplex-val">str ${strPct}%</div>
+        <div class="simplex-val" style="color:var(--blue)">att ${actPct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ INIT ═══
+async function init() {
+  connectWS();
+  try {
+    const r = await fetch('/api/state');
+    const d = await r.json();
+    updateFromSnapshot(d);
+  } catch(e) {}
+  refreshWill();
+  fetch('/api/wordfield').then(r=>r.json()).then(d => {
+    set('h-energy', d.total_energy.toFixed(3));
+    set('field-vertices', d.vertex_count.toLocaleString());
+    set('field-edges', d.edge_count.toLocaleString());
+    drawEnergyGauge(d.total_energy);
+  }).catch(()=>{});
+
+  // auto-refresh will ogni 6s
+  setInterval(refreshWill, 6000);
+  // auto-refresh energia ogni 12s
+  setInterval(() => {
+    fetch('/api/wordfield').then(r=>r.json()).then(d => {
+      set('h-energy', d.total_energy.toFixed(3));
+      drawEnergyGauge(d.total_energy);
+    }).catch(()=>{});
+  }, 12000);
+  // auto-refresh panel attivo ogni 4s
+  setInterval(() => {
+    if (document.getElementById('panel-campo').classList.contains('active'))
+      refreshWordField();
+    if (document.getElementById('panel-frattali').classList.contains('active'))
+      refreshTopology();
+    if (document.getElementById('panel-pensieri').classList.contains('active'))
+      refreshNarrative();
+    if (document.getElementById('panel-forma').classList.contains('active'))
+      refreshVisuals();
+  }, 4000);
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>

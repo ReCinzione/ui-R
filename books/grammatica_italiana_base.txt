@@ -1,0 +1,674 @@
+# GRAMMATICA ITALIANA - Libro Base per Prometeo
+# Obiettivo: Insegnare strutture sintattiche attraverso pattern topologici
+# Approccio: Non regole astratte, ma pattern ricorrenti nel campo
+
+## CAPITOLO 1: LA FRASE SEMPLICE
+
+# Soggetto + Verbo
+io cammino
+tu corri
+lui parla
+noi mangiamo
+voi dormite
+loro pensano
+
+# Soggetto + Verbo + Complemento Oggetto
+io mangio la mela
+tu bevi l'acqua
+lui legge il libro
+noi vediamo il cielo
+voi sentite il suono
+loro toccano la pietra
+
+# Soggetto + Verbo + Aggettivo
+io sono felice
+tu sei triste
+lui è forte
+noi siamo calmi
+voi siete stanchi
+loro sono veloci
+
+## CAPITOLO 2: GLI ARTICOLI
+
+# Articoli determinativi
+il sole brilla
+la luna splende
+lo spazio è vasto
+i fiori crescono
+le stelle brillano
+gli alberi sono alti
+
+# Articoli indeterminativi
+un uomo cammina
+una donna parla
+uno sguardo dice molto
+dei bambini giocano
+delle nuvole passano
+degli uccelli volano
+
+## CAPITOLO 3: AGGETTIVI E CONCORDANZA
+
+# L'aggettivo concorda con il nome
+il libro rosso
+la casa rossa
+i libri rossi
+le case rosse
+
+# Aggettivi prima e dopo
+il grande albero
+l'albero grande
+la bella donna
+la donna bella
+
+# Più aggettivi
+il grande albero verde
+la piccola casa rossa
+i lunghi capelli neri
+le alte montagne bianche
+
+## CAPITOLO 4: VERBI AL PRESENTE
+
+# Verbi regolari -are
+io parlo
+tu parli
+lui parla
+noi parliamo
+voi parlate
+loro parlano
+
+# Verbi regolari -ere
+io vedo
+tu vedi
+lui vede
+noi vediamo
+voi vedete
+loro vedono
+
+# Verbi regolari -ire
+io sento
+tu senti
+lui sente
+noi sentiamo
+voi sentite
+loro sentono
+
+# Verbi irregolari comuni
+io sono
+tu sei
+lui è
+noi siamo
+voi siete
+loro sono
+
+io ho
+tu hai
+lui ha
+noi abbiamo
+voi avete
+loro hanno
+
+io faccio
+tu fai
+lui fa
+noi facciamo
+voi fate
+loro fanno
+
+io vado
+tu vai
+lui va
+noi andiamo
+voi andate
+loro vanno
+
+## CAPITOLO 5: VERBI AL PASSATO
+
+# Passato prossimo con essere
+io sono andato
+tu sei venuto
+lui è partito
+noi siamo arrivati
+voi siete tornati
+loro sono caduti
+
+# Passato prossimo con avere
+io ho mangiato
+tu hai bevuto
+lui ha parlato
+noi abbiamo visto
+voi avete sentito
+loro hanno fatto
+
+# Imperfetto
+io ero felice
+tu eri triste
+lui era forte
+noi eravamo calmi
+voi eravate stanchi
+loro erano veloci
+
+io camminavo
+tu correvi
+lui parlava
+noi mangiavamo
+voi dormivate
+loro pensavano
+
+## CAPITOLO 6: VERBI AL FUTURO
+
+# Futuro semplice
+io sarò felice
+tu sarai forte
+lui sarà grande
+noi saremo insieme
+voi sarete lontani
+loro saranno qui
+
+io camminerò
+tu correrai
+lui parlerà
+noi mangeremo
+voi dormirete
+loro penseranno
+
+## CAPITOLO 7: PREPOSIZIONI SEMPLICI
+
+# Di
+il libro di Marco
+la casa di pietra
+il colore del cielo
+la voce della donna
+
+# A
+vado a casa
+parlo a te
+penso a domani
+arrivo a sera
+
+# Da
+vengo da lontano
+parto da qui
+sono da solo
+vivo da sempre
+
+# In
+sono in casa
+vivo in città
+penso in silenzio
+resto in pace
+
+# Con
+vado con te
+parlo con lui
+vivo con gioia
+resto con calma
+
+# Su
+il libro è su tavolo
+salgo su montagna
+penso su questo
+resto su terra
+
+# Per
+parto per viaggio
+faccio per te
+vivo per amore
+resto per sempre
+
+# Tra/Fra
+sto tra te e lui
+vivo fra montagne
+penso tra me
+resto fra noi
+
+## CAPITOLO 8: PRONOMI PERSONALI
+
+# Soggetto
+io parlo
+tu ascolti
+lui pensa
+lei sente
+noi viviamo
+voi andate
+loro restano
+
+# Complemento oggetto
+mi vedi
+ti sento
+lo conosco
+la guardo
+ci chiamano
+vi cercano
+li trovano
+
+# Complemento di termine
+mi parli
+ti dico
+gli do
+le chiedo
+ci raccontano
+vi mostrano
+loro spiegano
+
+## CAPITOLO 9: FRASI NEGATIVE
+
+# Negazione semplice
+io non vado
+tu non parli
+lui non mangia
+noi non dormiamo
+voi non vedete
+loro non sentono
+
+# Negazione doppia
+non vedo nessuno
+non ho niente
+non vado mai
+non c'è nulla
+non viene più
+non resta nemmeno
+
+## CAPITOLO 10: DOMANDE
+
+# Domande semplici
+tu vai?
+lui parla?
+voi mangiate?
+loro dormono?
+
+# Domande con pronomi interrogativi
+chi sei?
+che cosa fai?
+dove vai?
+quando vieni?
+come stai?
+perché parti?
+quanto costa?
+
+# Domande articolate
+chi è quella persona?
+che cosa vuoi dire?
+dove andiamo domani?
+quando torni a casa?
+come si fa questo?
+perché non vieni con noi?
+quanto tempo resta?
+
+## CAPITOLO 11: CONGIUNZIONI
+
+# E (addizione)
+io e tu
+parlo e ascolto
+vado e torno
+mangio e bevo
+
+# O (alternativa)
+tu o lui
+parlo o taccio
+vado o resto
+mangio o digiuno
+
+# Ma (opposizione)
+vado ma torno
+parlo ma non dico tutto
+sono felice ma stanco
+voglio ma non posso
+
+# Perché (causa)
+vado perché voglio
+parlo perché so
+resto perché devo
+mangio perché ho fame
+
+# Se (condizione)
+se vado ti chiamo
+se parli ti ascolto
+se vuoi ti aiuto
+se puoi vieni
+
+# Quando (tempo)
+quando vado ti avviso
+quando parli ti sento
+quando torni ti vedo
+quando vuoi ti chiamo
+
+## CAPITOLO 12: AVVERBI
+
+# Avverbi di modo
+parlo bene
+cammino male
+vado velocemente
+torno lentamente
+penso profondamente
+sento chiaramente
+
+# Avverbi di tempo
+vado ora
+torno dopo
+parto presto
+arrivo tardi
+resto sempre
+vado mai
+
+# Avverbi di luogo
+sono qui
+vado là
+resto dentro
+esco fuori
+salgo su
+scendo giù
+vado avanti
+torno indietro
+
+# Avverbi di quantità
+mangio molto
+bevo poco
+parlo troppo
+dormo abbastanza
+penso tanto
+sento quanto
+
+## CAPITOLO 13: FRASI COMPOSTE
+
+# Coordinazione
+vado e torno
+parlo ma non dico tutto
+mangio o digiuno
+penso quindi sono
+
+# Subordinazione causale
+vado perché voglio
+resto perché devo
+parlo perché so
+mangio perché ho fame
+
+# Subordinazione temporale
+quando vado ti chiamo
+mentre parlo tu ascolti
+dopo che mangio dormo
+prima che parti ti saluto
+
+# Subordinazione condizionale
+se vado ti avviso
+se parli ti ascolto
+se vuoi ti aiuto
+se puoi vieni
+
+## CAPITOLO 14: FRASI RELATIVE
+
+# Con che
+il libro che leggo
+la casa che vedo
+l'uomo che parla
+la donna che canta
+
+# Con cui
+il libro di cui parlo
+la casa in cui vivo
+l'uomo con cui vado
+la donna a cui penso
+
+# Con il quale
+il libro del quale parlo
+la casa nella quale vivo
+l'uomo con il quale vado
+la donna alla quale penso
+
+## CAPITOLO 15: COSTRUZIONI IMPERSONALI
+
+# Si impersonale
+si dice che
+si pensa che
+si vede che
+si sente che
+si sa che
+si crede che
+
+# Verbi impersonali
+piove
+nevica
+tuona
+lampeggia
+fa caldo
+fa freddo
+è bello
+è brutto
+
+## CAPITOLO 16: FORME RIFLESSIVE
+
+# Verbi riflessivi
+io mi lavo
+tu ti vesti
+lui si pettina
+noi ci svegliamo
+voi vi alzate
+loro si siedono
+
+# Verbi reciproci
+noi ci parliamo
+voi vi guardate
+loro si abbracciano
+noi ci aiutiamo
+voi vi capite
+loro si amano
+
+## CAPITOLO 17: COMPARATIVI E SUPERLATIVI
+
+# Comparativo di maggioranza
+io sono più alto di te
+tu sei più veloce di lui
+questo è più bello di quello
+lei è più forte di me
+
+# Comparativo di minoranza
+io sono meno alto di te
+tu sei meno veloce di lui
+questo è meno bello di quello
+lei è meno forte di me
+
+# Comparativo di uguaglianza
+io sono alto come te
+tu sei veloce come lui
+questo è bello come quello
+lei è forte come me
+
+# Superlativo relativo
+io sono il più alto
+tu sei il più veloce
+questo è il più bello
+lei è la più forte
+
+# Superlativo assoluto
+io sono altissimo
+tu sei velocissimo
+questo è bellissimo
+lei è fortissima
+
+## CAPITOLO 18: MODI VERBALI - CONGIUNTIVO
+
+# Congiuntivo presente
+io penso che tu sia felice
+io credo che lui venga
+io spero che voi stiate bene
+io voglio che loro restino
+
+# Congiuntivo imperfetto
+io pensavo che tu fossi felice
+io credevo che lui venisse
+io speravo che voi steste bene
+io volevo che loro restassero
+
+# Uso del congiuntivo
+benché sia tardi vado
+sebbene piova esco
+affinché tu capisca spiego
+prima che tu parta ti saluto
+
+## CAPITOLO 19: MODI VERBALI - CONDIZIONALE
+
+# Condizionale presente
+io vorrei andare
+tu dovresti parlare
+lui potrebbe venire
+noi dovremmo restare
+
+# Condizionale passato
+io sarei andato
+tu avresti parlato
+lui sarebbe venuto
+noi avremmo dovuto restare
+
+# Periodo ipotetico
+se potessi andrei
+se sapessi parlerei
+se volessi farei
+se avessi darei
+
+## CAPITOLO 20: MODI VERBALI - IMPERATIVO
+
+# Imperativo presente
+va'!
+vieni!
+parla!
+ascolta!
+mangia!
+dormi!
+
+# Imperativo con pronomi
+dimmi!
+dacci!
+fallo!
+prendilo!
+guardala!
+ascoltami!
+
+# Imperativo negativo
+non andare!
+non parlare!
+non fare!
+non dire!
+
+## CAPITOLO 21: COSTRUZIONI PARTICOLARI
+
+# Stare + gerundio
+io sto camminando
+tu stai parlando
+lui sta mangiando
+noi stiamo dormendo
+
+# Stare per + infinito
+io sto per andare
+tu stai per partire
+lui sta per arrivare
+noi stiamo per finire
+
+# Fare + infinito
+io faccio parlare lui
+tu fai vedere questo
+lui fa capire quello
+noi facciamo sapere tutto
+
+# Lasciare + infinito
+io lascio andare te
+tu lasci parlare lui
+lui lascia fare noi
+noi lasciamo stare tutto
+
+## CAPITOLO 22: ESPRESSIONI IDIOMATICHE
+
+# Avere + nome
+io ho fame
+tu hai sete
+lui ha sonno
+noi abbiamo freddo
+voi avete caldo
+loro hanno paura
+
+# Fare + nome
+io faccio colazione
+tu fai pranzo
+lui fa cena
+noi facciamo merenda
+voi fate spuntino
+loro fanno festa
+
+# Dare + nome
+io do retta
+tu dai ascolto
+lui dà aiuto
+noi diamo mano
+voi date voce
+loro danno vita
+
+## CAPITOLO 23: ORDINE DELLE PAROLE
+
+# Ordine normale: Soggetto-Verbo-Oggetto
+io mangio la mela
+tu leggi il libro
+lui vede il cielo
+
+# Ordine enfatico: Oggetto-Verbo-Soggetto
+la mela mangio io
+il libro leggi tu
+il cielo vede lui
+
+# Ordine con pronomi
+io la mangio
+tu lo leggi
+lui lo vede
+
+# Ordine con avverbi
+io mangio sempre la mela
+tu leggi spesso il libro
+lui vede raramente il cielo
+
+## CAPITOLO 24: PUNTEGGIATURA E PAUSE
+
+# Virgola per elenchi
+io mangio pane, acqua, frutta
+tu vedi alberi, fiori, erba
+lui sente voci, suoni, rumori
+
+# Virgola per incisi
+io, che sono felice, canto
+tu, che sei forte, aiuti
+lui, che è saggio, consiglia
+
+# Punto e virgola
+io vado; tu resti
+io parlo; tu ascolti
+io do; tu prendi
+
+# Due punti
+io dico: tu sei bravo
+tu pensi: io sono felice
+lui crede: noi siamo amici
+
+## CAPITOLO 25: DISCORSO DIRETTO E INDIRETTO
+
+# Discorso diretto
+io dico: "tu sei bravo"
+tu dici: "io sono felice"
+lui dice: "noi siamo amici"
+
+# Discorso indiretto
+io dico che tu sei bravo
+tu dici che sei felice
+lui dice che siamo amici
+
+# Trasformazione temporale
+io dico: "vado"
+io dico che vado
+
+io dicevo: "vado"
+io dicevo che andavo
+
+io ho detto: "vado"
+io ho detto che andavo
+
+## FINE DEL LIBRO BASE
+
+# Questo libro contiene i pattern fondamentali della grammatica italiana
+# Ogni frase è un esempio di struttura ricorrente
+# L'esposizione ripetuta cristallizzerà questi pattern nel campo topologico
+# Non ci sono regole esplicite - solo esempi che mostrano come le parole si combinano

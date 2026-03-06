@@ -1,0 +1,21 @@
+# Configurazione build Prometeo
+# Ottimizzazioni per compilazione veloce in sviluppo
+
+[target.x86_64-pc-windows-msvc]
+# rust-lld: linker LLVM (3-5x più veloce di link.exe su binari grandi)
+linker = "rust-lld.exe"
+
+[profile.dev]
+# 16 unità invece di 1 = compilazione parallela intra-crate
+codegen-units = 16
+# debug=1: solo numeri di riga (riduce .pdb da 56MB → ~8MB)
+# debug=2 (default) include tipi + variabili = enorme
+debug = 1
+# incremental già di default, esplicito per chiarezza
+incremental = true
+
+[profile.test]
+# Stesso profilo dev per i test
+codegen-units = 16
+debug = 1
+incremental = true

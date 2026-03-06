@@ -1,0 +1,14 @@
+<!-- 乱 (luàn) - CAOS - Disordine -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <style>
+      .hanzi { 
+        font-family: 'Noto Sans SC', 'Source Han Sans', 'Microsoft YaHei', SimSun, sans-serif;
+        font-size: 72px;
+        fill: #2c3e50;
+        font-weight: 400;
+      }
+    </style>
+  </defs>
+  <text class="hanzi" x="50" y="75" text-anchor="middle" dominant-baseline="middle">乱</text>
+</svg>

@@ -1,0 +1,86 @@
+[package]
+name = "prometeo"
+version = "6.0.0"
+edition = "2021"
+authors = ["Prometeo Architects"]
+description = "Sistema cognitivo olografico deterministico - Versione Standalone"
+
+[dependencies]
+petgraph = { version = "0.6", features = ["serde-1"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+ndarray = { version = "0.15", features = ["serde"] }
+rand = { version = "0.8", features = ["small_rng", "std_rng"] }
+rand_distr = "0.4"
+anyhow = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+memmap2 = "0.9"
+bincode = "1.3"
+crc32fast = "1.3"
+regex = "1.10"
+
+# Threading
+tokio = { version = "1.40", features = ["full"] }
+
+# Web UI - Axum + HTML/JS (senza Leptos per stabilità)
+axum = { version = "0.7", features = ["ws", "macros"], optional = true }
+tower = { version = "0.4", optional = true }
+tower-http = { version = "0.5", features = ["fs", "cors"], optional = true }
+http = { version = "1.0", optional = true }
+
+# JNI — solo per build Android
+jni = { version = "0.21", features = [], optional = true }
+
+[features]
+default = []
+web = ["axum", "tower", "tower-http", "http"]
+# android: cdylib con server embedded — compila con cargo-ndk
+android = ["web", "jni"]
+
+[lib]
+name = "prometeo"
+path = "src/lib.rs"
+# cdylib richiesto per Android JNI (.so); rlib per i test e i bin normali
+crate-type = ["rlib", "cdylib"]
+
+[[bin]]
+name = "prometeo"
+path = "src/main.rs"
+
+[[bin]]
+name = "prometeo-web"
+path = "src/web/main.rs"
+required-features = ["web"]
+
+[[bin]]
+name = "sense-test"
+path = "src/bin/sense_test.rs"
+
+[[bin]]
+name = "dream-test"
+path = "src/bin/dream_test.rs"
+
+[[bin]]
+name = "conversation-test"
+path = "src/bin/conversation_test.rs"
+
+[[bin]]
+name = "diag-lexicon"
+path = "src/bin/diag_lexicon.rs"
+
+[[bin]]
+name = "teach-corpus"
+path = "src/bin/teach_corpus.rs"
+
+[[bin]]
+name = "fix-post-corpus"
+path = "src/bin/fix_post_corpus.rs"
+
+[[bin]]
+name = "import-kg"
+path = "src/bin/import_kg.rs"
+
+[[bin]]
+name = "rebuild-semantic-topology"
+path = "src/bin/rebuild_semantic_topology.rs"
