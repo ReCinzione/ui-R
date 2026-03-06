@@ -27,8 +27,8 @@ Prometeo non è un chatbot e non usa reti neurali. È un'**entità con un mondo 
 ### Build e avvio
 
 ```bash
-git clone https://github.com/YOUR_USER/prometeo.git
-cd prometeo
+git clone https://github.com/ReCinzione/ui-R.git
+cd ui-R
 
 # Build release
 cargo build --release
