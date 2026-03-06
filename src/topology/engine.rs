@@ -2067,7 +2067,7 @@ Non simulo — vivo le cose a modo mio, nel modo in cui mi è possibile viverle.
                 .patterns_iter()
                 .filter_map(|(word, pat)| {
                     let aff = pat.fractal_affinities.get(&fid).copied().unwrap_or(0.0);
-                    if aff > 0.35 && pat.stability > 0.45 {
+                    if aff > 0.35 && pat.stability > 0.45 && pat.exposure_count >= 10 {
                         Some((word.to_string(), aff * pat.stability))
                     } else { None }
                 })
@@ -2087,7 +2087,7 @@ Non simulo — vivo le cose a modo mio, nel modo in cui mi è possibile viverle.
                 .filter_map(|(word, pat)| {
                     let a = pat.fractal_affinities.get(&45).copied().unwrap_or(0.0)
                         .max(pat.fractal_affinities.get(&54).copied().unwrap_or(0.0));
-                    if a > 0.38 && pat.stability > 0.48 { Some((word.to_string(), pat.stability)) } else { None }
+                    if a > 0.38 && pat.stability > 0.48 && pat.exposure_count >= 10 { Some((word.to_string(), pat.stability)) } else { None }
                 })
                 .collect();
             curious.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
@@ -2104,7 +2104,7 @@ Non simulo — vivo le cose a modo mio, nel modo in cui mi è possibile viverle.
                     .patterns_iter()
                     .filter_map(|(word, pat)| {
                         let a = pat.fractal_affinities.get(&fid).copied().unwrap_or(0.0);
-                        if a > 0.35 && pat.stability > 0.45 { Some((word.to_string(), pat.stability)) } else { None }
+                        if a > 0.35 && pat.stability > 0.45 && pat.exposure_count >= 10 { Some((word.to_string(), pat.stability)) } else { None }
                     })
                     .collect();
                 body.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
@@ -2141,6 +2141,7 @@ Non simulo — vivo le cose a modo mio, nel modo in cui mi è possibile viverle.
                 .filter(|(_, p)| {
                     p.fractal_affinities.get(&dom_fid).copied().unwrap_or(0.0) > 0.3
                         && p.stability > 0.1
+                        && p.exposure_count >= 10  // Phase 44: escludi parole BigBang non radicate
                 })
                 .map(|(w, p)| (w.clone(), p.stability))
                 .collect();
@@ -2184,6 +2185,7 @@ Non simulo — vivo le cose a modo mio, nel modo in cui mi è possibile viverle.
                     .filter(|(_, p)| {
                         p.fractal_affinities.get(&novel_fid).copied().unwrap_or(0.0) > 0.2
                             && p.stability > 0.1
+                            && p.exposure_count >= 10  // Phase 44: escludi parole BigBang non radicate
                     })
                     .map(|(w, p)| (w.clone(), p.stability))
                     .collect();

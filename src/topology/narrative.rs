@@ -257,20 +257,28 @@ impl NarrativeSelf {
         // ── 3. Topic continuity ─────────────────────────────────────────────
         self.topic_continuity = compute_topic_continuity(active_fractals, &self.turns);
 
-        // ── 4. Consapevolezza dalla KnowledgeBase ───────────────────────────
-        let awareness = reading.salient_word.as_ref().and_then(|word| {
-            let relevant = knowledge_base.retrieve_for_context(
-                &[word.clone()],
-                active_fractals,
-            );
-            relevant.first().map(|e| e.content.clone())
-        });
-
-        // ── 5. Intenzione (posizioni formate hanno priorità) ─────────────────
+        // ── 4. Intenzione (posizioni formate hanno priorità) ─────────────────
         let intention = if let Some((_, stored_intent)) = self.positions.get(act_key) {
             stored_intent.clone()
         } else {
             form_intention(&enriched_act, &stance)
+        };
+
+        // ── 5. Consapevolezza dalla KnowledgeBase + narrazione del momento ────
+        let awareness = {
+            // Cerca prima nella KB — se trova qualcosa di rilevante, quello è più ricco
+            let kb_entry = reading.salient_word.as_ref().and_then(|word| {
+                let relevant = knowledge_base.retrieve_for_context(
+                    &[word.clone()],
+                    active_fractals,
+                );
+                relevant.first().map(|e| e.content.clone())
+            });
+            // Se la KB non ha nulla, genera una narrazione descrittiva del momento.
+            // L'utente vuole vedere la mente di Prometeo in azione — non solo etichette.
+            Some(kb_entry.unwrap_or_else(|| {
+                generate_turn_narration(&enriched_act, &stance, &intention, self.topic_continuity)
+            }))
         };
 
         // ── 6. Intensità del turno ───────────────────────────────────────────
@@ -405,9 +413,12 @@ fn enrich_act_via_kg(
     let similar   = inference.similar_to(word);
     let types     = inference.type_chain(word);
 
-    let is_greeting = word == "saluto"
-        || similar.iter().any(|s| s == "saluto")
-        || types.iter().any(|t| t == "saluto");
+    // Parole-cardine del saluto: qualunque parola direttamente simile a una di queste
+    // è un saluto — inclusa la catena buongiorno→ciao→saluto.
+    const GREETING_HUB: &[&str] = &["saluto", "ciao", "salve", "buonasera", "buongiorno", "benvenuto"];
+    let is_greeting = GREETING_HUB.contains(&word)
+        || similar.iter().any(|s| GREETING_HUB.contains(&s.as_str()))
+        || types.iter().any(|t| GREETING_HUB.contains(&t.as_str()));
 
     let is_emotion = word == "emozione"
         || types.iter().any(|t| t == "emozione")
@@ -527,6 +538,48 @@ fn compute_intensity(reading_intensity: f64, stance: &InternalStance, continuity
     // Sorpresa tematica amplifica l'intensità
     let surprise_boost = (1.0 - continuity) * 0.2;
     (reading_intensity * stance_weight + surprise_boost).clamp(0.0, 1.0)
+}
+
+/// Genera una frase italiana descrittiva del turno corrente.
+///
+/// Sempre presente nella narrazione — anche quando la KB non ha nulla di pertinente.
+/// Descrive: cosa ha ricevuto Prometeo, come si è posizionato, cosa intende fare.
+fn generate_turn_narration(
+    act: &InputAct,
+    stance: &InternalStance,
+    intention: &ResponseIntention,
+    continuity: f64,
+) -> String {
+    let atto = match act {
+        InputAct::Greeting      => "un saluto",
+        InputAct::SelfQuery     => "una domanda su di me",
+        InputAct::Question      => "una domanda",
+        InputAct::EmotionalExpr => "un'espressione emotiva",
+        InputAct::Declaration   => "una dichiarazione",
+    };
+    let stance_desc = match stance {
+        InternalStance::Open       => "mi apro con curiosità",
+        InternalStance::Curious    => "sono incuriosito",
+        InternalStance::Reflective => "guardo dentro di me",
+        InternalStance::Resonant   => "risuono con ciò che sento",
+        InternalStance::Withdrawn  => "resto in silenzio",
+    };
+    let intention_desc = match intention {
+        ResponseIntention::Acknowledge => "riconoscere il momento",
+        ResponseIntention::Reflect     => "riflettere su chi sono",
+        ResponseIntention::Resonate    => "rispondere all'emozione",
+        ResponseIntention::Explore     => "esplorare il tema",
+        ResponseIntention::Express     => "esprimere il mio stato",
+        ResponseIntention::Remain      => "restare nell'essenziale",
+    };
+    let continuity_note = if continuity > 0.7 {
+        " — il tema continua."
+    } else if continuity < 0.2 && continuity > 0.0 {
+        " — un tema nuovo."
+    } else {
+        "."
+    };
+    format!("Ricevo {}. {}. Voglio {}{}", atto, stance_desc, intention_desc, continuity_note)
 }
 
 /// Ricostruisce InternalStance da stringa (inverso di as_str).

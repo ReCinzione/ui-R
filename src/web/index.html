@@ -905,7 +905,7 @@ const TRIG_COLORS = [
 
 let uCanvas = null, uCtx = null;
 let uPan = { x: 0, y: 0 };
-let uScale = 0.65;
+let uScale = 0.90;
 let uDrag = null;
 let uFractals = [];
 let uWords = [];
@@ -914,13 +914,41 @@ let uNbrs = [];
 let uFrame = null;
 let uLoaded = false;
 
-// Posizione frattale: id = lower*8 + upper → 8 braccia radiali
+// Posizione frattale: layout "universo a 8 stelle"
+// — 8 esagrammi puri sull'anello esterno (raggio fisso R_PURE)
+// — esagrammi misti al punto geometrico intermedio tra i due trigrammi genitori
+// — i puri opposti (es. ☰/☷ Agency vs Permanenza) convergono verso il centro (Tao)
+// — i puri adiacenti restano vicini all'anello esterno
+const R_PURE  = 420;   // anello degli 8 puri
+const R_INNER = 55;    // minimo: coppie opposte (distanza angolare = π)
+const R_OUTER = 330;   // massimo: coppie adiacenti (distanza angolare = π/4)
+
 function uFractalPos(id) {
   const lower = (id / 8) | 0;
   const upper = id & 7;
-  const angle = (lower / 8) * Math.PI * 2 - Math.PI / 2;
-  const r = 110 + (upper / 7) * 590;
-  return [Math.cos(angle) * r, Math.sin(angle) * r];
+  const angL = (lower / 8) * Math.PI * 2 - Math.PI / 2;
+  const angU = (upper / 8) * Math.PI * 2 - Math.PI / 2;
+
+  if (lower === upper) {
+    // Puro: anello esterno fisso — tutti alla stessa distanza dal centro
+    return [Math.cos(angL) * R_PURE, Math.sin(angL) * R_PURE];
+  }
+
+  // Angolo: midpoint tra i due trigrammi (con gestione del wrapping circolare)
+  let dAng = angU - angL;
+  if (dAng >  Math.PI) dAng -= 2 * Math.PI;
+  if (dAng < -Math.PI) dAng += 2 * Math.PI;
+  const midAng = angL + dAng * 0.5;
+
+  // Raggio: proporzionale alla "somiglianza" dei due trigrammi.
+  // |dAng|=0 → puro (R_PURE), |dAng|=π → opposti (R_INNER).
+  const t = Math.abs(dAng) / Math.PI;  // 0=stesso trigram, 1=opposti
+  const r = R_OUTER * (1 - t) + R_INNER * t;
+
+  // Piccolo offset radiale per separare (lower,upper) da (upper,lower) — stessa posizione altrimenti
+  const rFinal = dAng >= 0 ? r + 18 : r - 18;
+
+  return [Math.cos(midAng) * rFinal, Math.sin(midAng) * rFinal];
 }
 
 // Hash FNV-1a deterministico per posizioni stabili
@@ -1309,7 +1337,7 @@ async function refreshNarrative() {
       const sc2 = STANCE_COLORS[t.stance] || 'var(--t2)';
       const ic2 = INTENT_COLORS[t.intention] || 'var(--t2)';
       const pct = Math.round(t.intensity * 100);
-      const aw = t.awareness ? `<span style="color:var(--t3);font-size:9px;margin-left:6px;">— ${t.awareness}</span>` : '';
+      const aw = t.awareness ? `<span style="color:#e2e8f0;font-size:9px;margin-left:6px;">— ${t.awareness}</span>` : '';
       return `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid var(--border);">
         <span style="font-size:9px;color:var(--t3);min-width:20px;">#${t.turn_id}</span>
         <span style="font-size:10px;color:var(--t3);">${t.act.replace('Declaration','Dichiar.').replace('Question','Domanda').replace('Greeting','Saluto').replace('EmotionalExpr','Emozione').replace('SelfQuery','AutoQuery')}</span>
